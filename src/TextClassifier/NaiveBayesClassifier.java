@@ -223,8 +223,9 @@ public class NaiveBayesClassifier {
 	}
 	
 	//Classify documents, return a confusion matrix. input is a directory address containing
-	//document indexes produced by lucene
-	public int[][] Classify(String Dir) throws IOException{
+	//document indexes produced by lucene, the field name of actual categories in the index, and 
+	//the field name of texts in the index
+	public int[][] Classify(String Dir, String categoryFieldName, String textFieldName) throws IOException{
 		Directory dir = FSDirectory.open(new File(Dir),null);
 		IndexSearcher is = new IndexSearcher(dir);
 		IndexReader reader = is.getIndexReader();
@@ -238,8 +239,8 @@ public class NaiveBayesClassifier {
 		}
 		
 		for(int i = 0; i < NumDocs;i++){
-			TermFreqVector tf = reader.getTermFreqVector(i, "Capital_Text");
-			String actual = reader.document(i).get("Continent");
+			TermFreqVector tf = reader.getTermFreqVector(i, textFieldName);
+			String actual = reader.document(i).get(categoryFieldName);
 			String predicted = classify(tf);
 			confusion[classes.indexOf(predicted)][classes.indexOf(actual)]++;
 		}
